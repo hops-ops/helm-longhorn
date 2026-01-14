@@ -1,0 +1,9 @@
+# Default values for helm-longhorn deployment
+
+# Version of the configuration package to install
+# Use "latest" for the most recent version
+version: latest
+
+# Skip dependency resolution - set to true if functions are managed separately
+# When true, only the Configuration is installed (no Function package)
+skipDependencyResolution: false

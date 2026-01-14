@@ -1,0 +1,38 @@
+# code: language=yaml
+#
+# Helm release for Longhorn distributed block storage
+#
+
+{{- $lh := $state.longhorn }}
+
+---
+apiVersion: helm.m.crossplane.io/v1beta1
+kind: Release
+metadata:
+  name: {{ $lh.releaseName }}
+  annotations:
+    {{ setResourceNameAnnotation "helm-release-longhorn" }}
+  labels: {{ $lh.labels | toJson }}
+spec:
+  managementPolicies: {{ $lh.managementPolicies | toJson }}
+  forProvider:
+    chart:
+      name: longhorn
+      repository: https://charts.longhorn.io
+      version: 1.10.1
+    namespace: {{ $lh.namespace }}
+    {{- if $lh.overrideAllValues }}
+    values:
+      {{- toYaml $lh.overrideAllValues | nindent 6 }}
+    {{- else }}
+    values:
+      fullnameOverride: longhorn
+      nameOverride: longhorn
+      {{- if $lh.values }}
+      {{- toYaml $lh.values | nindent 6 }}
+      {{- end }}
+    {{- end }}
+  rollbackLimit: 3
+  providerConfigRef:
+    name: {{ $lh.providerConfigRef.name }}
+    kind: {{ $lh.providerConfigRef.kind }}
